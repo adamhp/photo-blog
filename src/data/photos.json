@@ -1,4 +1,62 @@
 {
-  "generatedAt": "1970-01-01T00:00:00.000Z",
-  "photos": []
+  "generatedAt": "2026-04-23T22:31:14.134Z",
+  "photos": [
+    {
+      "id": "bec8ab0c",
+      "cfImageId": "8e0d2366-a4c0-42cd-e5c6-3dfd84ac4000",
+      "width": 2731,
+      "height": 4096,
+      "aspectRatio": 0.666748046875,
+      "blurhash": "LZCQiOIAenWA?wRPo#ay?aWXWXoJ",
+      "takenAt": "2025-09-27T15:15:02.000Z",
+      "exif": {
+        "camera": "LEICA CAMERA AG LEICA Q3 43",
+        "lens": "APO-SUMMICRON 1:2/43 ASPH.",
+        "focalLength": 43,
+        "focalLength35": 43,
+        "aperture": 8,
+        "shutterSpeed": "1/250",
+        "iso": 100,
+        "exposureComp": -1
+      }
+    },
+    {
+      "id": "fc5b6ea3",
+      "cfImageId": "2361d3bb-6092-483a-c7d7-6f58a0361b00",
+      "width": 2726,
+      "height": 4096,
+      "aspectRatio": 0.66552734375,
+      "blurhash": "LvCHjIoff5j[u6j[a}a#o#kDj]og",
+      "takenAt": "2025-09-27T15:11:49.000Z",
+      "exif": {
+        "camera": "LEICA CAMERA AG LEICA Q3 43",
+        "lens": "APO-SUMMICRON 1:2/43 ASPH.",
+        "focalLength": 43,
+        "focalLength35": 43,
+        "aperture": 8,
+        "shutterSpeed": "1/250",
+        "iso": 100,
+        "exposureComp": -0.3
+      }
+    },
+    {
+      "id": "510d9595",
+      "cfImageId": "f1c99d92-1ded-49b5-dcbc-82a858e34600",
+      "width": 2726,
+      "height": 4096,
+      "aspectRatio": 0.66552734375,
+      "blurhash": "LkEyodtSkrtRY8ozozkDKRV@adWB",
+      "takenAt": "2025-09-27T15:11:33.000Z",
+      "exif": {
+        "camera": "LEICA CAMERA AG LEICA Q3 43",
+        "lens": "APO-SUMMICRON 1:2/43 ASPH.",
+        "focalLength": 43,
+        "focalLength35": 43,
+        "aperture": 8,
+        "shutterSpeed": "1/250",
+        "iso": 100,
+        "exposureComp": -0.3
+      }
+    }
+  ]
 }
