@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vite/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Photo originals (source of truth — kept locally, uploaded to Cloudflare Images via sync script)
+photos/originals/
+
+# Brainstorm workspace
+.superpowers/
