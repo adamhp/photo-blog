@@ -54,7 +54,7 @@ export function ExpandedPhoto() {
           onClick={close}
         >
           <div
-            className="relative w-full max-w-6xl h-full flex flex-col md:flex-row gap-6 items-center justify-center"
+            className="relative w-full max-w-6xl h-full flex flex-col md:flex-row gap-6 items-start justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <motion.div
