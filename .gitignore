@@ -19,6 +19,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Claude Code local overrides (personal permission allowlist)
+.claude/settings.local.json
+
 # Photo originals (source of truth — kept locally, uploaded to Cloudflare Images via sync script)
 photos/originals/
 
