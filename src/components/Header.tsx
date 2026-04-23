@@ -10,7 +10,7 @@ export function Header({ onOpenFilters }: Props) {
   const updatedStr = `${updated.getFullYear()}·${String(updated.getMonth() + 1).padStart(2, '0')}·${String(updated.getDate()).padStart(2, '0')}`;
   return (
     <header className="flex items-baseline justify-between px-6 py-5 border-b border-hairline gap-4">
-      <h1 className="font-sans text-base tracking-tight text-ink truncate">
+      <h1 className="font-mono text-base tracking-tight text-ink truncate">
         ADAM PEARCE — PHOTOGRAPHS
       </h1>
       <div className="flex items-baseline gap-4">
