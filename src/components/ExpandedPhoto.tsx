@@ -58,9 +58,8 @@ export function ExpandedPhoto() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col md:flex-row gap-6 items-start">
-              <motion.div
-                layoutId={`photo-${photo.id}`}
-                className="relative bg-hairline overflow-hidden max-h-full"
+              <div
+                className="relative max-h-full"
                 style={{
                   aspectRatio: photo.aspectRatio,
                   width: 'auto',
@@ -68,44 +67,49 @@ export function ExpandedPhoto() {
                   height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
                 }}
               >
-                <div className="absolute inset-0">
-                  <Blurhash hash={photo.blurhash} />
-                </div>
-                <img
-                  src={cfImageUrl(photo.cfImageId, 'medium')}
-                  alt=""
-                  className="relative w-full h-full object-contain"
-                />
-              </motion.div>
+                <motion.div
+                  layoutId={`photo-${photo.id}`}
+                  className="absolute inset-0 bg-hairline overflow-hidden"
+                >
+                  <div className="absolute inset-0">
+                    <Blurhash hash={photo.blurhash} />
+                  </div>
+                  <img
+                    src={cfImageUrl(photo.cfImageId, 'medium')}
+                    alt=""
+                    className="relative w-full h-full object-contain"
+                  />
+                </motion.div>
+
+                {currentIndex > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => goTo(currentIndex - 1)}
+                    className="absolute bottom-3 left-3 font-mono text-xs px-3 py-1.5 text-ink bg-paper/80 backdrop-blur-sm hover:text-accent"
+                    aria-label="Previous photo"
+                  >
+                    ← PREV
+                  </button>
+                )}
+                {currentIndex < manifest.photos.length - 1 && (
+                  <button
+                    type="button"
+                    onClick={() => goTo(currentIndex + 1)}
+                    className="absolute bottom-3 right-3 font-mono text-xs px-3 py-1.5 text-ink bg-paper/80 backdrop-blur-sm hover:text-accent"
+                    aria-label="Next photo"
+                  >
+                    NEXT →
+                  </button>
+                )}
+              </div>
 
               <ExifPanel photo={photo} />
             </div>
 
-            {currentIndex > 0 && (
-              <button
-                type="button"
-                onClick={() => goTo(currentIndex - 1)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 font-mono text-sm px-3 py-2 text-ink hover:text-accent"
-                aria-label="Previous photo"
-              >
-                ← PREV
-              </button>
-            )}
-            {currentIndex < manifest.photos.length - 1 && (
-              <button
-                type="button"
-                onClick={() => goTo(currentIndex + 1)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 font-mono text-sm px-3 py-2 text-ink hover:text-accent"
-                aria-label="Next photo"
-              >
-                NEXT →
-              </button>
-            )}
-
             <button
               type="button"
               onClick={close}
-              className="absolute top-2 right-2 font-mono text-xs text-ink hover:text-accent px-3 py-2"
+              className="fixed top-4 right-4 font-mono text-xs text-ink hover:text-accent px-3 py-2 z-10"
               aria-label="Close"
             >
               CLOSE ✕
