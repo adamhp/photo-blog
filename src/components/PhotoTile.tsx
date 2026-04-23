@@ -13,8 +13,10 @@ type Props = {
 
 // Row height in px used by Gallery's grid-auto-rows.
 // Tile spans Math.round(assumedTileWidth / aspectRatio / ROW_HEIGHT) rows.
+// ASSUMED_TILE_WIDTH should be near the average tile width across breakpoints
+// (site is capped at ~1536px with 2–5 columns → tiles range ~170–290px wide).
 const ROW_HEIGHT = 10;
-const ASSUMED_TILE_WIDTH = 400;
+const ASSUMED_TILE_WIDTH = 250;
 
 export function PhotoTile({ photo, index }: Props) {
   const [loaded, setLoaded] = useState(false);

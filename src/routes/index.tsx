@@ -32,13 +32,15 @@ function GalleryPage() {
 
   return (
     <div className="min-h-dvh bg-paper">
-      <Header onOpenFilters={() => setDrawerOpen(true)} />
-      <main className="flex flex-col lg:flex-row gap-8 px-6 pt-6 pb-16">
-        <div className="flex-1 min-w-0">
-          <Gallery />
-        </div>
-        <FilterSidebar />
-      </main>
+      <div className="max-w-384 mx-auto">
+        <Header onOpenFilters={() => setDrawerOpen(true)} />
+        <main className="flex flex-col lg:flex-row gap-8 px-6 pt-6 pb-16">
+          <div className="flex-1 min-w-0">
+            <Gallery />
+          </div>
+          <FilterSidebar />
+        </main>
+      </div>
       <FilterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <ExpandedPhoto />
     </div>
