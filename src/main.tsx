@@ -1,11 +1,19 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { routeTree } from './routeTree.gen';
 import './styles/theme.css';
+
+const router = createRouter({ routeTree });
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="p-8 font-sans">
-      <p className="font-mono text-sm text-ash">Bootstrapping…</p>
-    </div>
+    <RouterProvider router={router} />
   </StrictMode>,
 );
