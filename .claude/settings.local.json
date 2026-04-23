@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"C:/Users/adamp/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"c:/Users/adamp/dev/photo-blog\")",
+      "WebFetch(domain:photos.sambecker.com)",
+      "Bash(git init *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(echo \"EXIT_CODE: $?\")",
+      "Bash(npx tsc *)",
+      "Bash(git -C /c/Users/adamp/dev/photo-blog add .gitignore package.json package-lock.json tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts index.html src/main.tsx src/vite-env.d.ts)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); console.log\\(JSON.parse\\(d\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/typescript/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\('vite', require\\('./node_modules/vite/package.json'\\).version\\); console.log\\('plugin-react', require\\('./node_modules/@vitejs/plugin-react/package.json'\\).version\\); console.log\\('router-vite-plugin', require\\('./node_modules/@tanstack/router-vite-plugin/package.json'\\).version\\); console.log\\('react', require\\('./node_modules/react/package.json'\\).version\\); console.log\\('zod', require\\('./node_modules/zod/package.json'\\).version\\)\")",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
