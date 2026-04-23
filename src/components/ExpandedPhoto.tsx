@@ -54,30 +54,32 @@ export function ExpandedPhoto() {
           onClick={close}
         >
           <div
-            className="relative w-full max-w-6xl h-full flex flex-col md:flex-row gap-6 items-start justify-center"
+            className="relative w-full max-w-6xl h-full flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              layoutId={`photo-${photo.id}`}
-              className="relative bg-hairline overflow-hidden max-h-full"
-              style={{
-                aspectRatio: photo.aspectRatio,
-                width: 'auto',
-                maxWidth: '100%',
-                height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
-              }}
-            >
-              <div className="absolute inset-0">
-                <Blurhash hash={photo.blurhash} />
-              </div>
-              <img
-                src={cfImageUrl(photo.cfImageId, 'medium')}
-                alt=""
-                className="relative w-full h-full object-contain"
-              />
-            </motion.div>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <motion.div
+                layoutId={`photo-${photo.id}`}
+                className="relative bg-hairline overflow-hidden max-h-full"
+                style={{
+                  aspectRatio: photo.aspectRatio,
+                  width: 'auto',
+                  maxWidth: '100%',
+                  height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
+                }}
+              >
+                <div className="absolute inset-0">
+                  <Blurhash hash={photo.blurhash} />
+                </div>
+                <img
+                  src={cfImageUrl(photo.cfImageId, 'medium')}
+                  alt=""
+                  className="relative w-full h-full object-contain"
+                />
+              </motion.div>
 
-            <ExifPanel photo={photo} />
+              <ExifPanel photo={photo} />
+            </div>
 
             {currentIndex > 0 && (
               <button
