@@ -85,7 +85,7 @@ export function ExpandedPhoto() {
                   <button
                     type="button"
                     onClick={() => goTo(currentIndex - 1)}
-                    className="absolute bottom-3 left-3 font-mono text-xs px-3 py-1.5 text-ink bg-paper/80 backdrop-blur-sm hover:text-accent"
+                    className="absolute left-0 top-full mt-3 font-mono text-xs px-1 py-1.5 text-ink hover:text-accent"
                     aria-label="Previous photo"
                   >
                     ← PREV
@@ -95,7 +95,7 @@ export function ExpandedPhoto() {
                   <button
                     type="button"
                     onClick={() => goTo(currentIndex + 1)}
-                    className="absolute bottom-3 right-3 font-mono text-xs px-3 py-1.5 text-ink bg-paper/80 backdrop-blur-sm hover:text-accent"
+                    className="absolute right-0 top-full mt-3 font-mono text-xs px-1 py-1.5 text-ink hover:text-accent"
                     aria-label="Next photo"
                   >
                     NEXT →
