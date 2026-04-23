@@ -47,22 +47,22 @@ export function FilterSidebar({ variant = 'desktop' }: Props) {
     <aside
       className={
         variant === 'desktop'
-          ? 'hidden lg:flex lg:flex-col gap-5 w-64 shrink-0 font-mono text-[12px]'
-          : 'flex flex-col gap-5 font-mono text-[12px]'
+          ? 'hidden lg:flex lg:flex-col gap-5 w-64 shrink-0 font-mono text-[13px]'
+          : 'flex flex-col gap-5 font-mono text-[13px]'
       }
     >
       {hasAnyFilter(filters) && (
         <button
           type="button"
           onClick={clearAll}
-          className="self-start text-[11px] uppercase tracking-[0.12em] text-accent hover:underline"
+          className="self-start text-[12px] uppercase tracking-[0.12em] text-accent hover:underline"
         >
           Clear all
         </button>
       )}
       {facets.map((facet) => (
         <section key={facet.key} className="flex flex-col gap-1">
-          <div className="text-[10px] uppercase tracking-[0.14em] text-ash pb-1 border-b border-hairline">
+          <div className="text-[11px] uppercase tracking-[0.14em] text-ash pb-1 border-b border-hairline">
             {facet.label}
           </div>
           {facet.values.map(({ value, count, active }) => (

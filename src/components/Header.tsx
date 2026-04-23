@@ -14,13 +14,13 @@ export function Header({ onOpenFilters }: Props) {
         ADAM PEARCE — PHOTOGRAPHS
       </h1>
       <div className="flex items-baseline gap-4">
-        <p className="hidden sm:block font-mono text-[11px] uppercase tracking-[0.12em] text-ash">
+        <p className="hidden sm:block font-mono text-[12px] uppercase tracking-[0.12em] text-ash">
           {String(count).padStart(3, '0')} · UPDATED {updatedStr}
         </p>
         <button
           type="button"
           onClick={onOpenFilters}
-          className="lg:hidden font-mono text-[11px] uppercase tracking-[0.12em] text-ink hover:text-accent"
+          className="lg:hidden font-mono text-[12px] uppercase tracking-[0.12em] text-ink hover:text-accent"
         >
           FILTERS
         </button>

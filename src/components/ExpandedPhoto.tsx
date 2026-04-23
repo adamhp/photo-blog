@@ -85,7 +85,7 @@ export function ExpandedPhoto() {
                   <button
                     type="button"
                     onClick={() => goTo(currentIndex - 1)}
-                    className="absolute left-0 top-full mt-3 font-mono text-sm px-1 py-1.5 text-ink hover:text-accent"
+                    className="absolute left-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
                     aria-label="Previous photo"
                   >
                     ← PREV
@@ -95,7 +95,7 @@ export function ExpandedPhoto() {
                   <button
                     type="button"
                     onClick={() => goTo(currentIndex + 1)}
-                    className="absolute right-0 top-full mt-3 font-mono text-sm px-1 py-1.5 text-ink hover:text-accent"
+                    className="absolute right-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
                     aria-label="Next photo"
                   >
                     NEXT →
@@ -109,7 +109,7 @@ export function ExpandedPhoto() {
             <button
               type="button"
               onClick={close}
-              className="fixed top-4 right-4 font-mono text-sm text-ink hover:text-accent px-3 py-2 z-10"
+              className="fixed top-4 right-4 font-mono text-base text-ink hover:text-accent px-3 py-2 z-10"
               aria-label="Close"
             >
               CLOSE ✕
@@ -125,10 +125,10 @@ export function ExpandedPhoto() {
 function ExifPanel({ photo }: { photo: Photo }) {
   const rows = buildExifRows(photo.exif, photo.takenAt);
   return (
-    <aside className="font-mono text-[12px] w-full md:w-64 shrink-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 self-start">
+    <aside className="font-mono text-[13px] w-full md:w-64 shrink-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 self-start">
       {rows.map(([k, v]) => (
         <div key={k} className="contents">
-          <dt className="text-ash uppercase tracking-[0.08em] text-[11px]">{k}</dt>
+          <dt className="text-ash uppercase tracking-[0.08em] text-[12px]">{k}</dt>
           <dd className="text-ink">{v}</dd>
         </div>
       ))}
