@@ -5,11 +5,13 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 @theme {
-  /* Neutrals */
+  /* Neutrals — text colors */
   --color-paper: #ffffff;
   --color-ink: #111111;
   --color-graphite: #444444;
+  /* ash: 3.54:1 on paper — UI chrome, labels, captions at ≥14px bold / ≥18px normal only, not body copy */
   --color-ash: #888888;
+  /* mist, hairline: decorative only — never used for text */
   --color-mist: #bbbbbb;
   --color-hairline: #e8e8e8;
 
@@ -26,25 +28,16 @@
   --breakpoint-lg: 1100px;
 }
 
-/* Global baseline */
+/* Global baseline — margin:0 / box-sizing:border-box / button font inheritance
+   are already handled by Tailwind v4 preflight. */
 html,
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+  color-scheme: light;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-}
-
-body {
-  margin: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-button {
-  font-family: inherit;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Motion preferences */
