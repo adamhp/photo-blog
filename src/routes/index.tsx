@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { Header } from '@/components/Header';
 import { Gallery } from '@/components/Gallery';
+import { FilterSidebar } from '@/components/FilterSidebar';
+import { FilterDrawer } from '@/components/FilterDrawer';
+import { ExpandedPhoto } from '@/components/ExpandedPhoto';
+import { useSyncFiltersFromUrl } from '@/lib/use-sync-filters-from-url';
 
 const focalBucketSchema = z.enum(['≤24mm', '35mm', '50mm', '85mm', '135mm+']);
 
@@ -22,14 +27,20 @@ export const Route = createFileRoute('/')({
 });
 
 function GalleryPage() {
+  useSyncFiltersFromUrl();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   return (
     <div className="min-h-dvh bg-paper">
-      <Header />
-      <main className="flex flex-col lg:flex-row gap-6 px-6 pt-6 pb-16">
+      <Header onOpenFilters={() => setDrawerOpen(true)} />
+      <main className="flex flex-col lg:flex-row gap-8 px-6 pt-6 pb-16">
         <div className="flex-1 min-w-0">
           <Gallery />
         </div>
+        <FilterSidebar />
       </main>
+      <FilterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <ExpandedPhoto />
     </div>
   );
 }
