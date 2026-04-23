@@ -13,8 +13,8 @@ export function Gallery() {
       style={{ gridAutoRows: '10px' }}
     >
       <AnimatePresence initial={false}>
-        {photos.map((photo, index) => (
-          <PhotoTile key={photo.id} photo={photo} index={index} />
+        {photos.map((photo) => (
+          <PhotoTile key={photo.id} photo={photo} />
         ))}
       </AnimatePresence>
       {photos.length === 0 && (

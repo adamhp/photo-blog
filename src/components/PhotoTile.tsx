@@ -3,12 +3,11 @@ import { motion } from 'motion/react';
 import { Link } from '@tanstack/react-router';
 import type { Photo } from '@/lib/photos';
 import { cfImageUrl } from '@/lib/cf-images';
-import { formatCaption } from '@/lib/exif-format';
+import { formatAperture, formatIso, formatShutter } from '@/lib/exif-format';
 import { Blurhash } from './Blurhash';
 
 type Props = {
   photo: Photo;
-  index: number;
 };
 
 // Row height in px used by Gallery's grid-auto-rows.
@@ -18,10 +17,13 @@ type Props = {
 const ROW_HEIGHT = 10;
 const ASSUMED_TILE_WIDTH = 250;
 
-export function PhotoTile({ photo, index }: Props) {
+export function PhotoTile({ photo }: Props) {
   const [loaded, setLoaded] = useState(false);
-  const caption = formatCaption(photo, index);
   const rowSpan = Math.max(4, Math.round(ASSUMED_TILE_WIDTH / photo.aspectRatio / ROW_HEIGHT));
+
+  const aperture = formatAperture(photo.exif.aperture) ?? '—';
+  const shutter = formatShutter(photo.exif.shutterSpeed) ?? '—';
+  const iso = formatIso(photo.exif.iso) ?? '—';
 
   return (
     <figure
@@ -52,8 +54,10 @@ export function PhotoTile({ photo, index }: Props) {
           />
         </motion.div>
       </Link>
-      <figcaption className="font-mono text-[10px] leading-snug tracking-[0.02em] text-graphite">
-        {caption}
+      <figcaption className="flex justify-between font-mono text-[10px] leading-snug tracking-[0.02em] text-graphite">
+        <span>{aperture}</span>
+        <span>{shutter}</span>
+        <span>{iso}</span>
       </figcaption>
     </figure>
   );
