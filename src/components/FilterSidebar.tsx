@@ -47,7 +47,7 @@ export function FilterSidebar({ variant = 'desktop' }: Props) {
     <aside
       className={
         variant === 'desktop'
-          ? 'hidden lg:flex lg:flex-col gap-5 w-40 shrink-0 font-mono text-[11px]'
+          ? 'hidden lg:flex lg:flex-col gap-5 w-64 shrink-0 font-mono text-[11px]'
           : 'flex flex-col gap-5 font-mono text-[11px]'
       }
     >
