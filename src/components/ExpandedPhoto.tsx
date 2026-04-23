@@ -119,7 +119,7 @@ export function ExpandedPhoto() {
 function ExifPanel({ photo }: { photo: Photo }) {
   const rows = buildExifRows(photo.exif, photo.takenAt);
   return (
-    <aside className="font-mono text-[11px] w-full md:w-64 shrink-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 self-center">
+    <aside className="font-mono text-[11px] w-full md:w-64 shrink-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 self-start">
       {rows.map(([k, v]) => (
         <div key={k} className="contents">
           <dt className="text-ash uppercase tracking-[0.08em] text-[10px]">{k}</dt>
