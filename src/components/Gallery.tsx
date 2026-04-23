@@ -18,7 +18,7 @@ export function Gallery() {
         ))}
       </AnimatePresence>
       {photos.length === 0 && (
-        <p className="col-span-full font-mono text-xs text-ash py-16 text-center">
+        <p className="col-span-full font-mono text-sm text-ash py-16 text-center">
           No photos match current filters.
         </p>
       )}

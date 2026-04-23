@@ -27,13 +27,13 @@ export function FilterDrawer({ open, onClose }: Props) {
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex justify-between items-baseline mb-6">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ash">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ash">
                 Filters
               </span>
               <button
                 type="button"
                 onClick={onClose}
-                className="font-mono text-xs text-ink hover:text-accent"
+                className="font-mono text-sm text-ink hover:text-accent"
                 aria-label="Close filters"
               >
                 CLOSE ✕

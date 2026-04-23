@@ -54,7 +54,7 @@ export function PhotoTile({ photo }: Props) {
           />
         </motion.div>
       </Link>
-      <figcaption className="flex justify-between font-mono text-[10px] leading-snug tracking-[0.02em] text-graphite">
+      <figcaption className="flex justify-between font-mono text-[11px] leading-snug tracking-[0.02em] text-graphite">
         <span>{aperture}</span>
         <span>{shutter}</span>
         <span>{iso}</span>
