@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* Self-hosted fonts (loaded by @fontsource packages) */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  /* Neutrals */
+  --color-paper: #ffffff;
+  --color-ink: #111111;
+  --color-graphite: #444444;
+  --color-ash: #888888;
+  --color-mist: #bbbbbb;
+  --color-hairline: #e8e8e8;
+
+  /* One restrained accent */
+  --color-accent: #cc2b1e;
+
+  /* Typography */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  /* Layout */
+  --spacing-tile-gap: 12px;
+  --breakpoint-md: 720px;
+  --breakpoint-lg: 1100px;
+}
+
+/* Global baseline */
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
