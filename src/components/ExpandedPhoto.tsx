@@ -26,13 +26,21 @@ export function ExpandedPhoto() {
   const currentIndex = photo ? manifest.photos.findIndex((p) => p.id === photo.id) : -1;
 
   const close = () => {
-    navigate({ search: (prev) => ({ ...prev, photo: undefined }), replace: false });
+    navigate({
+      search: (prev) => ({ ...prev, photo: undefined }),
+      replace: false,
+      resetScroll: false,
+    });
   };
 
   const goTo = (idx: number) => {
     const target = manifest.photos[idx];
     if (!target) return;
-    navigate({ search: (prev) => ({ ...prev, photo: target.id }), replace: true });
+    navigate({
+      search: (prev) => ({ ...prev, photo: target.id }),
+      replace: true,
+      resetScroll: false,
+    });
   };
 
   useEffect(() => {

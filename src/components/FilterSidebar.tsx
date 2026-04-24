@@ -25,6 +25,7 @@ export function FilterSidebar({ variant = 'desktop' }: Props) {
         [group]: next.length > 0 ? next : undefined,
       }),
       replace: true,
+      resetScroll: false,
     });
   };
 
@@ -40,6 +41,7 @@ export function FilterSidebar({ variant = 'desktop' }: Props) {
         tag: undefined,
       }),
       replace: true,
+      resetScroll: false,
     });
   };
 

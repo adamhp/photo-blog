@@ -23,6 +23,7 @@ export function PhotoTile({ photo }: Props) {
         to="/"
         search={(prev) => ({ ...prev, photo: photo.id })}
         replace={false}
+        resetScroll={false}
         className="block relative overflow-hidden bg-hairline"
         style={{ aspectRatio: photo.aspectRatio }}
       >
