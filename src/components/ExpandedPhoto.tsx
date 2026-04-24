@@ -83,7 +83,7 @@ export function ExpandedPhoto() {
                 {!mediumLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg
-                      className="w-12 h-12 animate-spin text-ink drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]"
+                      className="w-12 h-12 animate-spin text-ink"
                       viewBox="0 0 256 256"
                       fill="currentColor"
                       aria-label="Loading"
