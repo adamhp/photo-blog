@@ -20,10 +20,10 @@ A static photo gallery. Photos live in `photos/originals/` (local only, gitignor
 ## Workflow
 
 - Drop photos into `photos/originals/` (any of `.jpg .jpeg .heic .png .webp`).
-- Run `npm run photos:sync`. The script uploads new photos and updates `src/data/photos.json`. Commit the manifest.
+- Run `npm run photos:sync`. The script uploads new photos, removes entries whose source files are gone (with confirmation), and updates `src/data/photos.json`. Commit the manifest.
 - `npm run dev` to preview locally. `npm run build` to produce a static bundle. `npm run typecheck` to type-check without emitting.
 
 ## Sync flags
 
 - `npm run photos:sync -- --dry` — show what would change, no API calls.
-- `npm run photos:sync -- --prune` — also remove manifest entries whose originals were deleted from disk.
+- `npm run photos:sync -- --keep-orphans` — don't prompt to delete manifest entries whose source files are missing (useful if you've moved the originals directory temporarily).

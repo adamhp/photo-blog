@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 import { readdir, readFile, writeFile, rename, access, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { join, extname } from 'node:path';
+import { basename, join, extname } from 'node:path';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import 'dotenv/config';
@@ -29,6 +29,7 @@ type Exif = {
 type Photo = {
   id: string;
   cfImageId: string;
+  originalFilename?: string;
   width: number;
   height: number;
   aspectRatio: number;
@@ -45,6 +46,7 @@ type Manifest = {
 
 type SourceFile = {
   path: string;
+  filename: string;
   id: string;
   bytes: Buffer;
 };
@@ -90,7 +92,7 @@ async function scanOriginals(): Promise<SourceFile[]> {
     const path = join(ORIGINALS_DIR, name);
     const bytes = await readFile(path);
     const id = createHash('sha256').update(bytes).digest('hex').slice(0, 8);
-    files.push({ path, id, bytes });
+    files.push({ path, filename: basename(path), id, bytes });
   }
   return files;
 }
@@ -99,7 +101,7 @@ function parseFlags() {
   return parseArgs({
     options: {
       dry: { type: 'boolean', default: false },
-      prune: { type: 'boolean', default: false },
+      'keep-orphans': { type: 'boolean', default: false },
     },
   }).values;
 }
@@ -237,17 +239,17 @@ async function main() {
   const manifest = await loadManifest();
   const existingIds = new Set(manifest.photos.map((p) => p.id));
   const sources = await scanOriginals();
+  const sourceById = new Map(sources.map((s) => [s.id, s]));
 
   const newSources = sources.filter((s) => !existingIds.has(s.id));
-  const sourceIds = new Set(sources.map((s) => s.id));
-  const orphans = manifest.photos.filter((p) => !sourceIds.has(p.id));
+  const orphans = manifest.photos.filter((p) => !sourceById.has(p.id));
 
   console.log(`Scan: ${sources.length} source files, ${newSources.length} new, ${orphans.length} orphaned manifest entries.`);
-  console.log(`Mode: ${flags.dry ? 'DRY RUN' : 'LIVE'}${flags.prune ? ' (prune enabled)' : ''}`);
+  console.log(`Mode: ${flags.dry ? 'DRY RUN' : 'LIVE'}${flags['keep-orphans'] ? ' (keep-orphans — no pruning)' : ''}`);
 
   if (flags.dry) {
     for (const s of newSources) console.log(`  + ${s.path} (${s.id})`);
-    for (const o of orphans) console.log(`  - ${o.id} (orphaned)`);
+    for (const o of orphans) console.log(`  - ${o.id} ${o.originalFilename ?? ''} (orphaned)`);
     return;
   }
 
@@ -262,6 +264,7 @@ async function main() {
       const photo: Photo = {
         id: src.id,
         cfImageId,
+        originalFilename: src.filename,
         width: meta.width,
         height: meta.height,
         aspectRatio: meta.height > 0 ? meta.width / meta.height : 1,
@@ -276,25 +279,39 @@ async function main() {
     }
   }
 
-  let photos = [...manifest.photos, ...added];
+  // Existing manifest entries: backfill originalFilename for any that lack it,
+  // and update the filename if the source has been renamed.
+  const kept = manifest.photos
+    .filter((p) => sourceById.has(p.id))
+    .map((p) => {
+      const src = sourceById.get(p.id)!;
+      if (p.originalFilename !== src.filename) {
+        return { ...p, originalFilename: src.filename };
+      }
+      return p;
+    });
 
-  if (flags.prune && orphans.length > 0) {
-    console.log(`Orphans to prune: ${orphans.map((o) => o.id).join(', ')}`);
+  let photos: Photo[] = [...kept, ...added];
+
+  if (!flags['keep-orphans'] && orphans.length > 0) {
+    const labels = orphans.map((o) => `${o.id}${o.originalFilename ? ` (${o.originalFilename})` : ''}`);
+    console.log(`Orphans to prune: ${labels.join(', ')}`);
     const ok = await confirm('Delete these from Cloudflare Images and the manifest?');
     if (ok) {
       for (const o of orphans) {
         try {
           await deleteFromCloudflare(o.cfImageId, env.accountId, env.token);
-          console.log(`  - deleted ${o.id}`);
+          console.log(`  - deleted ${o.id}${o.originalFilename ? ` (${o.originalFilename})` : ''}`);
         } catch (err) {
           console.warn(`  ! delete failed for ${o.id}:`, err instanceof Error ? err.message : err);
         }
       }
-      const orphanIds = new Set(orphans.map((o) => o.id));
-      photos = photos.filter((p) => !orphanIds.has(p.id));
     } else {
-      console.log('Pruning skipped.');
+      console.log('Pruning skipped — orphans retained in manifest.');
+      photos = [...photos, ...orphans];
     }
+  } else if (flags['keep-orphans']) {
+    photos = [...photos, ...orphans];
   }
 
   photos.sort((a, b) => b.takenAt.localeCompare(a.takenAt));
@@ -305,7 +322,8 @@ async function main() {
   };
   await writeManifestAtomic(nextManifest);
 
-  console.log(`Done. +${added.length} added · ${failed.length} failed · total ${photos.length}.`);
+  const pruned = flags['keep-orphans'] ? 0 : orphans.length;
+  console.log(`Done. +${added.length} added · ${pruned} pruned · ${failed.length} failed · total ${photos.length}.`);
   if (failed.length > 0) process.exitCode = 1;
 }
 

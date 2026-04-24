@@ -15,6 +15,7 @@ export type Exif = {
 export type Photo = {
   id: string;
   cfImageId: string;
+  originalFilename?: string;
   width: number;
   height: number;
   aspectRatio: number;
