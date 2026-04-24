@@ -82,11 +82,33 @@ export function ExpandedPhoto() {
                 </div>
                 {!mediumLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className="w-8 h-8 rounded-full border-2 border-ink/20 border-t-ink animate-spin"
+                    <svg
+                      className="w-12 h-12 animate-spin text-ink drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]"
+                      viewBox="-50 -50 100 100"
                       aria-label="Loading"
                       role="status"
-                    />
+                      style={{ animationDuration: '2.5s' }}
+                    >
+                      {/* Outer aperture body */}
+                      <circle cx="0" cy="0" r="40" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
+                      {/* Hexagonal iris opening */}
+                      <polygon
+                        points="0,-18 15.59,-9 15.59,9 0,18 -15.59,9 -15.59,-9"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinejoin="round"
+                      />
+                      {/* Six blade edges: hex vertices → outer ring */}
+                      <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <line x1="0" y1="-18" x2="0" y2="-40" />
+                        <line x1="15.59" y1="-9" x2="34.64" y2="-20" />
+                        <line x1="15.59" y1="9" x2="34.64" y2="20" />
+                        <line x1="0" y1="18" x2="0" y2="40" />
+                        <line x1="-15.59" y1="9" x2="-34.64" y2="20" />
+                        <line x1="-15.59" y1="-9" x2="-34.64" y2="-20" />
+                      </g>
+                    </svg>
                   </div>
                 )}
                 <img
