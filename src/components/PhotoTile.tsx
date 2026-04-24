@@ -8,28 +8,17 @@ import { Blurhash } from './Blurhash';
 
 type Props = {
   photo: Photo;
-  tileWidth: number;
 };
 
-// Row height in px used by Gallery's grid-auto-rows.
-// Span = ceil((photo height + caption height) / ROW_HEIGHT).
-const ROW_HEIGHT = 10;
-const CAPTION_HEIGHT = 26; // figcaption text-[12px] + gap-1.5 + a couple px slack
-
-export function PhotoTile({ photo, tileWidth }: Props) {
+export function PhotoTile({ photo }: Props) {
   const [loaded, setLoaded] = useState(false);
-  const photoHeight = tileWidth / photo.aspectRatio;
-  const rowSpan = Math.max(4, Math.ceil((photoHeight + CAPTION_HEIGHT) / ROW_HEIGHT));
 
   const aperture = formatAperture(photo.exif.aperture) ?? '—';
   const shutter = formatShutter(photo.exif.shutterSpeed) ?? '—';
   const iso = formatIso(photo.exif.iso) ?? '—';
 
   return (
-    <figure
-      className="flex flex-col gap-1.5"
-      style={{ gridRow: `span ${rowSpan}` }}
-    >
+    <figure className="break-inside-avoid mb-3 flex flex-col gap-1.5">
       <Link
         to="/"
         search={(prev) => ({ ...prev, photo: photo.id })}
