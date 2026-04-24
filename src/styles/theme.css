@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
 /* Self-hosted font — Departure Mono used throughout (sans + mono). */
-@import "@proj-airi/font-departure-mono";
+@font-face {
+  font-family: "Departure Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("/fonts/DepartureMono-Regular.woff2") format("woff2"),
+    url("/fonts/DepartureMono-Regular.woff") format("woff");
+}
 
 @theme {
   /* Neutrals — text colors */
