@@ -11,6 +11,7 @@
     "photos:sync": "tsx scripts/sync-photos.ts"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.2.7",
     "@tanstack/react-router": "^1.168.23",
     "blurhash": "^2.0.5",
     "motion": "^12.38.0",

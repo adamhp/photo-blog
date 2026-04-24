@@ -1,15 +1,8 @@
 @import "tailwindcss";
 
-/* Self-hosted font — Departure Mono used throughout (sans + mono). */
-@font-face {
-  font-family: "Departure Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src:
-    url("/fonts/DepartureMono-Regular.woff2") format("woff2"),
-    url("/fonts/DepartureMono-Regular.woff") format("woff");
-}
+/* Self-hosted font — IBM Plex Mono used throughout (sans + mono). */
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @theme {
   /* Neutrals — text colors */
@@ -26,8 +19,8 @@
   --color-accent: #cc2b1e;
 
   /* Typography — single typeface for the whole site */
-  --font-sans: "Departure Mono", ui-monospace, monospace;
-  --font-mono: "Departure Mono", ui-monospace, monospace;
+  --font-sans: "IBM Plex Mono", ui-monospace, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   /* Layout */
   --spacing-tile-gap: 12px;
