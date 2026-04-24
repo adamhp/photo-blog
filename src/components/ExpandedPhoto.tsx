@@ -80,6 +80,15 @@ export function ExpandedPhoto() {
                 <div className="absolute inset-0">
                   <Blurhash hash={photo.blurhash} />
                 </div>
+                {!mediumLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className="w-8 h-8 rounded-full border-2 border-ink/20 border-t-ink animate-spin"
+                      aria-label="Loading"
+                      role="status"
+                    />
+                  </div>
+                )}
                 <img
                   src={cfImageUrl(photo.cfImageId, 'medium')}
                   alt=""
