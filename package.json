@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "photos:sync": "tsx scripts/sync-photos.ts",
-    "favicons:generate": "tsx scripts/generate-favicons.ts"
+    "favicons:generate": "tsx scripts/generate-favicons.ts",
+    "exif:debug": "tsx scripts/debug-exif.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",
