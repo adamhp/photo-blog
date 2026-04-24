@@ -8,18 +8,18 @@ import { Blurhash } from './Blurhash';
 
 type Props = {
   photo: Photo;
+  tileWidth: number;
 };
 
 // Row height in px used by Gallery's grid-auto-rows.
-// Tile spans Math.round(assumedTileWidth / aspectRatio / ROW_HEIGHT) rows.
-// ASSUMED_TILE_WIDTH should be near the average tile width across breakpoints
-// (site is capped at ~1536px with 2–5 columns → tiles range ~170–290px wide).
+// Span = ceil((photo height + caption height) / ROW_HEIGHT).
 const ROW_HEIGHT = 10;
-const ASSUMED_TILE_WIDTH = 250;
+const CAPTION_HEIGHT = 26; // figcaption text-[12px] + gap-1.5 + a couple px slack
 
-export function PhotoTile({ photo }: Props) {
+export function PhotoTile({ photo, tileWidth }: Props) {
   const [loaded, setLoaded] = useState(false);
-  const rowSpan = Math.max(4, Math.round(ASSUMED_TILE_WIDTH / photo.aspectRatio / ROW_HEIGHT));
+  const photoHeight = tileWidth / photo.aspectRatio;
+  const rowSpan = Math.max(4, Math.ceil((photoHeight + CAPTION_HEIGHT) / ROW_HEIGHT));
 
   const aperture = formatAperture(photo.exif.aperture) ?? '—';
   const shutter = formatShutter(photo.exif.shutterSpeed) ?? '—';
