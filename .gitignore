@@ -27,3 +27,6 @@ photos/originals/
 
 # Brainstorm workspace
 .superpowers/
+
+# Vercel CLI
+.vercel/
