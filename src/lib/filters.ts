@@ -2,21 +2,15 @@ import { create } from 'zustand';
 import type { Photo } from './photos';
 import { manifest } from './photos';
 
-export type FocalBucket = '≤24mm' | '35mm' | '50mm' | '85mm' | '135mm+';
-
-export function focalBucket(focal?: number): FocalBucket | undefined {
+export function focalLabel(focal?: number): string | undefined {
   if (focal === undefined) return undefined;
-  if (focal <= 24) return '≤24mm';
-  if (focal < 45) return '35mm';
-  if (focal < 70) return '50mm';
-  if (focal < 120) return '85mm';
-  return '135mm+';
+  return `${Math.round(focal)}mm`;
 }
 
 export type FilterState = {
   camera: string[];
   lens: string[];
-  focal: FocalBucket[];
+  focal: string[];
   film: string[];
   tag: string[];
 };
@@ -55,8 +49,8 @@ export function matchesFilters(photo: Photo, f: FilterState): boolean {
   if (f.camera.length > 0 && (!photo.exif.camera || !f.camera.includes(photo.exif.camera))) return false;
   if (f.lens.length > 0 && (!photo.exif.lens || !f.lens.includes(photo.exif.lens))) return false;
   if (f.focal.length > 0) {
-    const b = focalBucket(photo.exif.focalLength);
-    if (!b || !f.focal.includes(b)) return false;
+    const label = focalLabel(photo.exif.focalLength);
+    if (!label || !f.focal.includes(label)) return false;
   }
   if (f.film.length > 0 && (!photo.exif.filmSimulation || !f.film.includes(photo.exif.filmSimulation))) return false;
   if (f.tag.length > 0) {
@@ -89,8 +83,8 @@ export function computeFacets(f: FilterState): Facet[] {
     { key: 'camera', label: 'Camera', extract: (p) => (p.exif.camera ? [p.exif.camera] : []) },
     { key: 'lens', label: 'Lens', extract: (p) => (p.exif.lens ? [p.exif.lens] : []) },
     { key: 'focal', label: 'Focal length', extract: (p) => {
-      const b = focalBucket(p.exif.focalLength);
-      return b ? [b] : [];
+      const label = focalLabel(p.exif.focalLength);
+      return label ? [label] : [];
     }},
     { key: 'film', label: 'Film sim', extract: (p) => (p.exif.filmSimulation ? [p.exif.filmSimulation] : []) },
     { key: 'tag', label: 'Tag', extract: (p) => p.tags ?? [] },
@@ -105,7 +99,15 @@ export function computeFacets(f: FilterState): Facet[] {
     }
     const active = f[g.key] as string[];
     const values = [...counts.entries()]
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .sort((a, b) => {
+        // Focal length: always numeric ascending (28mm → 43mm → 50mm), not
+        // by count — the natural order is more intuitive for a focal list.
+        if (g.key === 'focal') {
+          return parseInt(a[0], 10) - parseInt(b[0], 10);
+        }
+        // Everything else: count desc, then alphabetical.
+        return b[1] - a[1] || a[0].localeCompare(b[0]);
+      })
       .map(([value, count]) => ({ value, count, active: active.includes(value) }));
     if (values.length > 0) facets.push({ key: g.key, label: g.label, values });
   }

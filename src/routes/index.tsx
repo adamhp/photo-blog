@@ -9,12 +9,10 @@ import { ExpandedPhoto } from '@/components/ExpandedPhoto';
 import { Footer } from '@/components/Footer';
 import { useSyncFiltersFromUrl } from '@/lib/use-sync-filters-from-url';
 
-const focalBucketSchema = z.enum(['≤24mm', '35mm', '50mm', '85mm', '135mm+']);
-
 export const searchSchema = z.object({
   camera: z.array(z.string()).optional(),
   lens: z.array(z.string()).optional(),
-  focal: z.array(focalBucketSchema).optional(),
+  focal: z.array(z.string()).optional(),
   film: z.array(z.string()).optional(),
   tag: z.array(z.string()).optional(),
   photo: z.string().optional(),
