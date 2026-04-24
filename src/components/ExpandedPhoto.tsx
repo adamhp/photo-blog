@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
@@ -11,6 +11,13 @@ export function ExpandedPhoto() {
   const search = useSearch({ from: '/' });
   const navigate = useNavigate({ from: '/' });
   const photoId = search.photo;
+  const [mediumLoaded, setMediumLoaded] = useState(false);
+
+  // Reset the loaded flag every time we switch to a different photo so the
+  // blurhash shows while the new medium variant fetches.
+  useEffect(() => {
+    setMediumLoaded(false);
+  }, [photoId]);
 
   const photo: Photo | undefined = photoId
     ? manifest.photos.find((p) => p.id === photoId)
@@ -60,10 +67,15 @@ export function ExpandedPhoto() {
             {/* Left spacer on desktop — mirrors the EXIF panel's width so the photo sits visually at the viewport center. */}
             <div className="hidden md:block w-64 shrink-0" aria-hidden />
 
-            <div className="relative w-fit">
+            <div className="relative">
               <motion.div
                 layoutId={`photo-${photo.id}`}
-                className="relative bg-hairline overflow-hidden w-fit"
+                className="relative bg-hairline overflow-hidden"
+                style={{
+                  aspectRatio: photo.aspectRatio,
+                  width: `min(calc(100vw - var(--lightbox-horizontal-budget)), calc(85vh * ${photo.aspectRatio}), ${photo.width}px)`,
+                  maxHeight: '85vh',
+                }}
               >
                 <div className="absolute inset-0">
                   <Blurhash hash={photo.blurhash} />
@@ -71,9 +83,9 @@ export function ExpandedPhoto() {
                 <img
                   src={cfImageUrl(photo.cfImageId, 'medium')}
                   alt=""
-                  width={photo.width}
-                  height={photo.height}
-                  className="block w-auto h-auto max-w-[calc(100vw-32px)] md:max-w-[calc(100vw-600px)] max-h-[85vh] relative"
+                  onLoad={() => setMediumLoaded(true)}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-out"
+                  style={{ opacity: mediumLoaded ? 1 : 0 }}
                 />
               </motion.div>
 

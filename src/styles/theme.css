@@ -28,6 +28,18 @@
   --breakpoint-lg: 1100px;
 }
 
+/* Width budget to subtract from 100vw when computing the lightbox photo's
+   max width. Mobile: just the backdrop padding. md+: also accounts for
+   the left spacer (w-64), gap, EXIF panel (w-64), and padding. */
+:root {
+  --lightbox-horizontal-budget: 32px;
+}
+@media (min-width: 720px) {
+  :root {
+    --lightbox-horizontal-budget: 600px;
+  }
+}
+
 /* Global baseline — margin:0 / box-sizing:border-box / button font inheritance
    are already handled by Tailwind v4 preflight. */
 html,
