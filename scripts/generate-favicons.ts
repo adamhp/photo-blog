@@ -14,6 +14,12 @@ const sizes: Array<{ name: string; size: number }> = [
   { name: 'favicon-512.png', size: 512 },
 ];
 
+// Open Graph image — shown as the preview when a link is shared on
+// social / chat platforms. Standard recommended size is 1200×630.
+const OG_WIDTH = 1200;
+const OG_HEIGHT = 630;
+const OG_ICON_SIZE = 360;
+
 async function main() {
   const svg = await readFile(SRC);
   await copyFile(SRC, join(OUT_DIR, 'favicon.svg'));
@@ -31,6 +37,28 @@ async function main() {
       .toFile(join(OUT_DIR, name));
     console.log(`✓ ${name} (${size}×${size})`);
   }
+
+  // og-image: centered aperture on a paper-white background.
+  const apertureBuffer = await sharp(svg, { density: 2400 })
+    .resize(OG_ICON_SIZE, OG_ICON_SIZE, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+
+  await sharp({
+    create: {
+      width: OG_WIDTH,
+      height: OG_HEIGHT,
+      channels: 4,
+      background: { r: 255, g: 255, b: 255, alpha: 1 },
+    },
+  })
+    .composite([{ input: apertureBuffer, gravity: 'center' }])
+    .png()
+    .toFile(join(OUT_DIR, 'og-image.png'));
+  console.log(`✓ og-image.png (${OG_WIDTH}×${OG_HEIGHT})`);
 }
 
 main().catch((err) => {
