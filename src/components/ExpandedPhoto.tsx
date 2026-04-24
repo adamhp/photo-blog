@@ -54,67 +54,71 @@ export function ExpandedPhoto() {
           onClick={close}
         >
           <div
-            className="relative w-full max-w-6xl h-full flex flex-col items-center justify-center"
+            className="relative flex flex-col md:flex-row items-center md:items-start gap-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-              <div
-                className="relative max-h-full"
-                style={{
-                  aspectRatio: photo.aspectRatio,
-                  width: 'auto',
-                  maxWidth: '100%',
-                  height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
-                }}
+            {/* Left spacer on desktop — mirrors the EXIF panel's width so the photo sits visually at the viewport center. */}
+            <div className="hidden md:block w-64 shrink-0" aria-hidden />
+
+            <div
+              className="relative max-h-full"
+              style={{
+                aspectRatio: photo.aspectRatio,
+                width: 'auto',
+                maxWidth: '100%',
+                height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
+              }}
+            >
+              <motion.div
+                layoutId={`photo-${photo.id}`}
+                className="absolute inset-0 bg-hairline overflow-hidden"
               >
-                <motion.div
-                  layoutId={`photo-${photo.id}`}
-                  className="absolute inset-0 bg-hairline overflow-hidden"
+                <div className="absolute inset-0">
+                  <Blurhash hash={photo.blurhash} />
+                </div>
+                <img
+                  src={cfImageUrl(photo.cfImageId, 'medium')}
+                  alt=""
+                  className="relative w-full h-full object-contain"
+                />
+              </motion.div>
+
+              {currentIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={() => goTo(currentIndex - 1)}
+                  className="absolute left-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
+                  aria-label="Previous photo"
                 >
-                  <div className="absolute inset-0">
-                    <Blurhash hash={photo.blurhash} />
-                  </div>
-                  <img
-                    src={cfImageUrl(photo.cfImageId, 'medium')}
-                    alt=""
-                    className="relative w-full h-full object-contain"
-                  />
-                </motion.div>
-
-                {currentIndex > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => goTo(currentIndex - 1)}
-                    className="absolute left-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
-                    aria-label="Previous photo"
-                  >
-                    ← PREV
-                  </button>
-                )}
-                {currentIndex < manifest.photos.length - 1 && (
-                  <button
-                    type="button"
-                    onClick={() => goTo(currentIndex + 1)}
-                    className="absolute right-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
-                    aria-label="Next photo"
-                  >
-                    NEXT →
-                  </button>
-                )}
-              </div>
-
-              <ExifPanel photo={photo} />
+                  ← PREV
+                </button>
+              )}
+              {currentIndex < manifest.photos.length - 1 && (
+                <button
+                  type="button"
+                  onClick={() => goTo(currentIndex + 1)}
+                  className="absolute right-0 top-full mt-3 font-mono text-base px-1 py-1.5 text-ink hover:text-accent"
+                  aria-label="Next photo"
+                >
+                  NEXT →
+                </button>
+              )}
             </div>
 
-            <button
-              type="button"
-              onClick={close}
-              className="fixed top-4 right-4 font-mono text-base text-ink hover:text-accent px-3 py-2 z-10"
-              aria-label="Close"
-            >
-              CLOSE ✕
-            </button>
+            <ExifPanel photo={photo} />
           </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              close();
+            }}
+            className="fixed top-4 right-4 font-mono text-base text-ink hover:text-accent px-3 py-2 z-10"
+            aria-label="Close"
+          >
+            CLOSE ✕
+          </button>
         </motion.div>
       )}
     </AnimatePresence>,
