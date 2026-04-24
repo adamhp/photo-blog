@@ -14,9 +14,11 @@ export function Header({ onOpenFilters }: Props) {
         ADAM PEARCE — PHOTOGRAPHS
       </h1>
       <div className="flex items-baseline gap-4">
-        <p className="hidden sm:block font-mono text-base tracking-tight text-ink">
-          {String(count).padStart(3, '0')} · UPDATED {updatedStr}
-        </p>
+        <div className="hidden lg:flex lg:justify-between lg:items-baseline lg:w-64 font-mono text-base tracking-tight text-ink">
+          <span>{String(count).padStart(3, '0')}</span>
+          <span>·</span>
+          <span>UPDATED {updatedStr}</span>
+        </div>
         <button
           type="button"
           onClick={onOpenFilters}
