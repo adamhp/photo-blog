@@ -8,6 +8,7 @@ import 'dotenv/config';
 import exifr from 'exifr';
 import sharp from 'sharp';
 import { encode as encodeBlurhash } from 'blurhash';
+import { Listr } from 'listr2';
 
 const ORIGINALS_DIR = 'photos/originals';
 const MANIFEST_PATH = 'src/data/photos.json';
@@ -232,55 +233,81 @@ async function writeManifestAtomic(m: Manifest): Promise<void> {
   await rename(tmp, MANIFEST_PATH);
 }
 
+type Failure = { filename: string; reason: string };
+
+type SyncContext = {
+  env: { accountId: string; token: string };
+  newSources: SourceFile[];
+  orphans: Photo[];
+  kept: Photo[];
+  added: Photo[];
+  failed: Failure[];
+  deletedOrphanIds: Set<string>;
+  pruneOrphans: boolean;
+  totalPhotos: number;
+};
+
+const COLORS = {
+  reset: '\x1b[0m',
+  dim: '\x1b[2m',
+  bold: '\x1b[1m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m',
+  gray: '\x1b[90m',
+};
+
+function c(color: keyof typeof COLORS, text: string | number): string {
+  return `${COLORS[color]}${text}${COLORS.reset}`;
+}
+
 async function main() {
   const flags = parseFlags();
   const env = flags.dry ? { accountId: '', token: '' } : requireEnv();
 
   const manifest = await loadManifest();
-  const existingIds = new Set(manifest.photos.map((p) => p.id));
   const sources = await scanOriginals();
   const sourceById = new Map(sources.map((s) => [s.id, s]));
-
+  const existingIds = new Set(manifest.photos.map((p) => p.id));
   const newSources = sources.filter((s) => !existingIds.has(s.id));
   const orphans = manifest.photos.filter((p) => !sourceById.has(p.id));
 
-  console.log(`Scan: ${sources.length} source files, ${newSources.length} new, ${orphans.length} orphaned manifest entries.`);
-  console.log(`Mode: ${flags.dry ? 'DRY RUN' : 'LIVE'}${flags['keep-orphans'] ? ' (keep-orphans — no pruning)' : ''}`);
+  console.log();
+  console.log(c('bold', '  photo sync'));
+  console.log(c('gray', `  ${ORIGINALS_DIR} → ${MANIFEST_PATH}`));
+  console.log();
+  console.log(`  ${c('gray', 'sources  ')} ${sources.length}`);
+  console.log(`  ${c('gray', 'new      ')} ${c(newSources.length > 0 ? 'cyan' : 'gray', newSources.length)}`);
+  console.log(`  ${c('gray', 'orphaned ')} ${c(orphans.length > 0 ? 'yellow' : 'gray', orphans.length)}`);
+  console.log();
 
   if (flags.dry) {
-    for (const s of newSources) console.log(`  + ${s.path} (${s.id})`);
-    for (const o of orphans) console.log(`  - ${o.id} ${o.originalFilename ?? ''} (orphaned)`);
+    console.log(c('bold', '  DRY RUN — no changes will be made'));
+    console.log();
+    for (const s of newSources) console.log(c('green', `  + ${s.filename}`) + c('gray', ` (${s.id})`));
+    for (const o of orphans) {
+      const label = o.originalFilename ?? o.id;
+      console.log(c('yellow', `  - ${label}`) + c('gray', ` (${o.id})`));
+    }
+    console.log();
     return;
   }
 
-  const added: Photo[] = [];
-  const failed: string[] = [];
-
-  for (const src of newSources) {
-    console.log(`  → ${src.path}`);
-    try {
-      const meta = await extractMeta(src.bytes);
-      const cfImageId = await uploadToCloudflare(src.bytes, `${src.id}${extname(src.path)}`, env.accountId, env.token);
-      const photo: Photo = {
-        id: src.id,
-        cfImageId,
-        originalFilename: src.filename,
-        width: meta.width,
-        height: meta.height,
-        aspectRatio: meta.height > 0 ? meta.width / meta.height : 1,
-        blurhash: meta.blurhash,
-        takenAt: meta.takenAt,
-        exif: meta.exif,
-      };
-      added.push(photo);
-    } catch (err) {
-      console.warn(`  ! failed ${src.path}:`, err instanceof Error ? err.message : err);
-      failed.push(src.path);
+  // Orphan confirmation happens BEFORE Listr takes over the TTY, so the prompt
+  // renders cleanly.
+  let pruneOrphans = false;
+  if (!flags['keep-orphans'] && orphans.length > 0) {
+    console.log(c('bold', '  orphans to prune:'));
+    for (const o of orphans) {
+      const label = o.originalFilename ?? o.id;
+      console.log(c('yellow', `    - ${label}`) + c('gray', ` (${o.id})`));
     }
+    console.log();
+    pruneOrphans = await confirm('  Delete these from Cloudflare Images and the manifest?');
+    console.log();
   }
 
-  // Existing manifest entries: backfill originalFilename for any that lack it,
-  // and update the filename if the source has been renamed.
   const kept = manifest.photos
     .filter((p) => sourceById.has(p.id))
     .map((p) => {
@@ -291,40 +318,131 @@ async function main() {
       return p;
     });
 
-  let photos: Photo[] = [...kept, ...added];
-
-  if (!flags['keep-orphans'] && orphans.length > 0) {
-    const labels = orphans.map((o) => `${o.id}${o.originalFilename ? ` (${o.originalFilename})` : ''}`);
-    console.log(`Orphans to prune: ${labels.join(', ')}`);
-    const ok = await confirm('Delete these from Cloudflare Images and the manifest?');
-    if (ok) {
-      for (const o of orphans) {
-        try {
-          await deleteFromCloudflare(o.cfImageId, env.accountId, env.token);
-          console.log(`  - deleted ${o.id}${o.originalFilename ? ` (${o.originalFilename})` : ''}`);
-        } catch (err) {
-          console.warn(`  ! delete failed for ${o.id}:`, err instanceof Error ? err.message : err);
-        }
-      }
-    } else {
-      console.log('Pruning skipped — orphans retained in manifest.');
-      photos = [...photos, ...orphans];
-    }
-  } else if (flags['keep-orphans']) {
-    photos = [...photos, ...orphans];
-  }
-
-  photos.sort((a, b) => b.takenAt.localeCompare(a.takenAt));
-
-  const nextManifest: Manifest = {
-    generatedAt: new Date().toISOString(),
-    photos,
+  const ctx: SyncContext = {
+    env,
+    newSources,
+    orphans,
+    kept,
+    added: [],
+    failed: [],
+    deletedOrphanIds: new Set(),
+    pruneOrphans,
+    totalPhotos: 0,
   };
-  await writeManifestAtomic(nextManifest);
 
-  const pruned = flags['keep-orphans'] ? 0 : orphans.length;
-  console.log(`Done. +${added.length} added · ${pruned} pruned · ${failed.length} failed · total ${photos.length}.`);
-  if (failed.length > 0) process.exitCode = 1;
+  const tasks = new Listr<SyncContext>(
+    [
+      {
+        title:
+          newSources.length === 0
+            ? 'No new photos to upload'
+            : `Upload ${newSources.length} new photo${newSources.length === 1 ? '' : 's'}`,
+        skip: () => newSources.length === 0,
+        task: async (ctx, task) => {
+          let i = 0;
+          for (const src of ctx.newSources) {
+            i += 1;
+            task.output = `${c('gray', `[${i}/${ctx.newSources.length}]`)} ${src.filename}`;
+            try {
+              const meta = await extractMeta(src.bytes);
+              const cfImageId = await uploadToCloudflare(
+                src.bytes,
+                `${src.id}${extname(src.path)}`,
+                ctx.env.accountId,
+                ctx.env.token,
+              );
+              ctx.added.push({
+                id: src.id,
+                cfImageId,
+                originalFilename: src.filename,
+                width: meta.width,
+                height: meta.height,
+                aspectRatio: meta.height > 0 ? meta.width / meta.height : 1,
+                blurhash: meta.blurhash,
+                takenAt: meta.takenAt,
+                exif: meta.exif,
+              });
+            } catch (err) {
+              ctx.failed.push({
+                filename: src.filename,
+                reason: err instanceof Error ? err.message : String(err),
+              });
+            }
+          }
+          task.title = `Uploaded ${ctx.added.length}/${ctx.newSources.length} new photo${ctx.newSources.length === 1 ? '' : 's'}`;
+        },
+      },
+      {
+        title:
+          orphans.length === 0 || !pruneOrphans
+            ? 'No orphans to prune'
+            : `Prune ${orphans.length} orphan${orphans.length === 1 ? '' : 's'}`,
+        skip: () => orphans.length === 0 || !pruneOrphans,
+        task: async (ctx, task) => {
+          let i = 0;
+          for (const o of ctx.orphans) {
+            i += 1;
+            const label = o.originalFilename ?? o.id;
+            task.output = `${c('gray', `[${i}/${ctx.orphans.length}]`)} ${label}`;
+            try {
+              await deleteFromCloudflare(o.cfImageId, ctx.env.accountId, ctx.env.token);
+              ctx.deletedOrphanIds.add(o.id);
+            } catch (err) {
+              ctx.failed.push({
+                filename: label,
+                reason: err instanceof Error ? err.message : String(err),
+              });
+            }
+          }
+          task.title = `Pruned ${ctx.deletedOrphanIds.size}/${ctx.orphans.length} orphan${ctx.orphans.length === 1 ? '' : 's'}`;
+        },
+      },
+      {
+        title: 'Write manifest',
+        task: async (ctx, task) => {
+          const retained = ctx.pruneOrphans
+            ? ctx.kept
+            : [...ctx.kept, ...ctx.orphans];
+          const photos = [...retained, ...ctx.added].sort((a, b) => b.takenAt.localeCompare(a.takenAt));
+          const nextManifest: Manifest = {
+            generatedAt: new Date().toISOString(),
+            photos,
+          };
+          await writeManifestAtomic(nextManifest);
+          ctx.totalPhotos = photos.length;
+          task.title = `Wrote manifest (${photos.length} photo${photos.length === 1 ? '' : 's'})`;
+        },
+      },
+    ],
+    {
+      concurrent: false,
+      exitOnError: false,
+      rendererOptions: {
+        collapseSubtasks: false,
+      },
+    },
+  );
+
+  await tasks.run(ctx);
+
+  console.log();
+  const parts = [
+    c('green', `+${ctx.added.length} added`),
+    c('yellow', `-${ctx.deletedOrphanIds.size} pruned`),
+    ctx.failed.length > 0 ? c('red', `${ctx.failed.length} failed`) : c('gray', '0 failed'),
+    c('gray', `${ctx.totalPhotos} total`),
+  ];
+  console.log(`  ${parts.join('  ·  ')}`);
+  console.log();
+
+  if (ctx.failed.length > 0) {
+    console.log(c('red', c('bold', '  failures:')));
+    for (const f of ctx.failed) {
+      console.log(`    ${c('red', f.filename)} ${c('gray', '—')} ${f.reason}`);
+    }
+    console.log();
+    process.exitCode = 1;
+  }
 }
 
 main().catch((err) => {
