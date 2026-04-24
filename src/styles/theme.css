@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
-/* Self-hosted fonts (loaded by @fontsource packages) */
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/jetbrains-mono";
+/* Self-hosted font — Departure Mono used throughout (sans + mono). */
+@import "@proj-airi/font-departure-mono";
 
 @theme {
   /* Neutrals — text colors */
@@ -18,9 +17,9 @@
   /* One restrained accent */
   --color-accent: #cc2b1e;
 
-  /* Typography */
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  /* Typography — single typeface for the whole site */
+  --font-sans: "Departure Mono", ui-monospace, monospace;
+  --font-mono: "Departure Mono", ui-monospace, monospace;
 
   /* Layout */
   --spacing-tile-gap: 12px;
