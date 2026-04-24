@@ -117,6 +117,19 @@ function requireEnv(): { accountId: string; token: string } {
   return { accountId, token };
 }
 
+/**
+ * Clean up a camera Model string so it reads well in the UI / filter list.
+ * Strips corporate suffixes (CAMERA AG, Inc., Corporation, Co. Ltd) and
+ * collapses immediately-repeated words (e.g., "FUJIFILM FUJIFILM X-T5" →
+ * "FUJIFILM X-T5"). Runs on both new extractions and existing manifest
+ * entries (see backfill in main()), so old and new photos end up normalized.
+ */
+function normalizeCameraName(raw: string): string {
+  let cleaned = raw.replace(/\b(?:CAMERA\s+AG|CORPORATION|INC\.?|CO\.?\s*LTD\.?)\s+/gi, '');
+  cleaned = cleaned.replace(/\b(\S+)\s+\1\b/gi, '$1');
+  return cleaned.trim();
+}
+
 async function extractExif(bytes: Buffer): Promise<Exif> {
   try {
     const tags = await exifr.parse(bytes, {
@@ -132,7 +145,7 @@ async function extractExif(bytes: Buffer): Promise<Exif> {
     });
     if (!tags) return {};
     return {
-      camera: [tags.Make, tags.Model].filter(Boolean).join(' ').trim() || undefined,
+      camera: typeof tags.Model === 'string' ? normalizeCameraName(tags.Model) : undefined,
       lens: tags.LensModel || undefined,
       focalLength: typeof tags.FocalLength === 'number' ? tags.FocalLength : undefined,
       focalLength35: typeof tags.FocalLengthIn35mmFormat === 'number' ? tags.FocalLengthIn35mmFormat : undefined,
@@ -308,14 +321,27 @@ async function main() {
     console.log();
   }
 
+  // For kept entries: backfill originalFilename (or update on rename) and
+  // normalize the stored camera string, so old manifest entries get cleaned
+  // up (e.g., "LEICA CAMERA AG LEICA Q3 43" → "LEICA Q3 43") without any
+  // re-upload.
   const kept = manifest.photos
     .filter((p) => sourceById.has(p.id))
     .map((p) => {
       const src = sourceById.get(p.id)!;
-      if (p.originalFilename !== src.filename) {
-        return { ...p, originalFilename: src.filename };
-      }
-      return p;
+      const filenameChanged = p.originalFilename !== src.filename;
+      const normalizedCamera = p.exif.camera
+        ? normalizeCameraName(p.exif.camera)
+        : p.exif.camera;
+      const cameraChanged = normalizedCamera !== p.exif.camera;
+      if (!filenameChanged && !cameraChanged) return p;
+      return {
+        ...p,
+        originalFilename: filenameChanged ? src.filename : p.originalFilename,
+        exif: cameraChanged
+          ? { ...p.exif, camera: normalizedCamera }
+          : p.exif,
+      };
     });
 
   const ctx: SyncContext = {
