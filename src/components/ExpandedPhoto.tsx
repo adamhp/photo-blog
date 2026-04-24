@@ -60,18 +60,10 @@ export function ExpandedPhoto() {
             {/* Left spacer on desktop — mirrors the EXIF panel's width so the photo sits visually at the viewport center. */}
             <div className="hidden md:block w-64 shrink-0" aria-hidden />
 
-            <div
-              className="relative max-h-full"
-              style={{
-                aspectRatio: photo.aspectRatio,
-                width: 'auto',
-                maxWidth: '100%',
-                height: photo.aspectRatio >= 1 ? 'auto' : '80vh',
-              }}
-            >
+            <div className="relative w-fit">
               <motion.div
                 layoutId={`photo-${photo.id}`}
-                className="absolute inset-0 bg-hairline overflow-hidden"
+                className="relative bg-hairline overflow-hidden w-fit"
               >
                 <div className="absolute inset-0">
                   <Blurhash hash={photo.blurhash} />
@@ -79,7 +71,9 @@ export function ExpandedPhoto() {
                 <img
                   src={cfImageUrl(photo.cfImageId, 'medium')}
                   alt=""
-                  className="relative w-full h-full object-contain"
+                  width={photo.width}
+                  height={photo.height}
+                  className="block w-auto h-auto max-w-[calc(100vw-32px)] md:max-w-[calc(100vw-600px)] max-h-[85vh] relative"
                 />
               </motion.div>
 
