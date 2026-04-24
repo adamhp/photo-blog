@@ -6,6 +6,7 @@ import { Gallery } from '@/components/Gallery';
 import { FilterSidebar } from '@/components/FilterSidebar';
 import { FilterDrawer } from '@/components/FilterDrawer';
 import { ExpandedPhoto } from '@/components/ExpandedPhoto';
+import { Footer } from '@/components/Footer';
 import { useSyncFiltersFromUrl } from '@/lib/use-sync-filters-from-url';
 
 const focalBucketSchema = z.enum(['≤24mm', '35mm', '50mm', '85mm', '135mm+']);
@@ -40,6 +41,7 @@ function GalleryPage() {
           </div>
           <FilterSidebar />
         </main>
+        <Footer />
       </div>
       <FilterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <ExpandedPhoto />
