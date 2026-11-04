@@ -2,7 +2,17 @@ export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="flex items-center justify-center gap-3 px-6 py-8 font-mono text-[12px] text-mist">
-      <span>© {year} Adam Pearce</span>
+      <span>
+        © {year}{' '}
+        <a
+          href="https://adamhp.io"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-ink transition-colors"
+        >
+          Adam Pearce
+        </a>
+      </span>
       <span aria-hidden>·</span>
       <a
         href="https://www.instagram.com/_adamhp/"
