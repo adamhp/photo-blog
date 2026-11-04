@@ -2,15 +2,18 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from '@tanstack/react-router';
 import type { Photo } from '@/lib/photos';
-import { cfImageUrl } from '@/lib/cf-images';
+import { cfImageUrl, type Variant } from '@/lib/cf-images';
 import { formatAperture, formatIso, formatShutter } from '@/lib/exif-format';
 import { Blurhash } from './Blurhash';
 
 type Props = {
   photo: Photo;
+  // Image box height in px; may exceed the photo's natural height (cropped).
+  imageHeight: number;
+  variant: Variant;
 };
 
-export function PhotoTile({ photo }: Props) {
+export function PhotoTile({ photo, imageHeight, variant }: Props) {
   const [loaded, setLoaded] = useState(false);
 
   const aperture = formatAperture(photo.exif.aperture) ?? '—';
@@ -18,14 +21,14 @@ export function PhotoTile({ photo }: Props) {
   const iso = formatIso(photo.exif.iso) ?? '—';
 
   return (
-    <figure className="break-inside-avoid mb-3 flex flex-col gap-1.5">
+    <figure className="flex flex-col gap-1.5">
       <Link
         to="/"
         search={(prev) => ({ ...prev, photo: photo.id })}
         replace={false}
         resetScroll={false}
         className="block relative overflow-hidden bg-hairline"
-        style={{ aspectRatio: photo.aspectRatio }}
+        style={{ height: imageHeight }}
       >
         <motion.div
           layoutId={`photo-${photo.id}`}
@@ -35,7 +38,7 @@ export function PhotoTile({ photo }: Props) {
             <Blurhash hash={photo.blurhash} />
           </div>
           <img
-            src={cfImageUrl(photo.cfImageId, 'thumb')}
+            src={cfImageUrl(photo.cfImageId, variant)}
             alt=""
             loading="lazy"
             onLoad={() => setLoaded(true)}
@@ -44,7 +47,7 @@ export function PhotoTile({ photo }: Props) {
           />
         </motion.div>
       </Link>
-      <figcaption className="flex justify-between font-mono text-[12px] leading-snug tracking-[0.02em] text-graphite">
+      <figcaption className="flex justify-between font-mono text-[12px] h-4 leading-4 tracking-[0.02em] text-graphite">
         <span>{aperture}</span>
         <span>{shutter}</span>
         <span>{iso}</span>
