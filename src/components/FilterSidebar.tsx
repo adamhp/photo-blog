@@ -80,7 +80,7 @@ export function FilterSidebar({ variant = 'desktop' }: Props) {
                 {active && <span className="inline-block w-1.5 h-1.5 bg-accent" aria-hidden />}
                 <span className="truncate">{value}</span>
               </span>
-              <span className="text-mist shrink-0">{count}</span>
+              <span className="text-ash shrink-0">{count}</span>
             </button>
           ))}
         </section>

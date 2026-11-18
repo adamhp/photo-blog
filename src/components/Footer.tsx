@@ -1,7 +1,7 @@
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="flex items-center justify-center gap-3 px-6 py-8 font-mono text-[12px] text-mist">
+    <footer className="flex items-center justify-center gap-3 px-6 py-8 font-mono text-[12px] text-ash">
       <span>
         © {year}{' '}
         <a

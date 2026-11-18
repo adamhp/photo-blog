@@ -1,31 +1,46 @@
 @import "tailwindcss";
 
-/* Self-hosted font — IBM Plex Mono used throughout (sans + mono). */
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
+/* Self-hosted font — Geist Mono used throughout (sans + mono), as on adamhp.io. */
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
 
 @theme {
-  /* Neutrals — text colors */
-  --color-paper: #ffffff;
-  --color-ink: #111111;
-  --color-graphite: #444444;
-  /* ash: 3.54:1 on paper — UI chrome, labels, captions at ≥14px bold / ≥18px normal only, not body copy */
-  --color-ash: #888888;
-  /* mist, hairline: decorative only — never used for text */
-  --color-mist: #bbbbbb;
-  --color-hairline: #e8e8e8;
+  /* Warm paper neutrals, shared with adamhp.io. Contrast on paper:
+     ink 13.93:1, graphite 6.05:1, ash 4.86:1 (all pass WCAG AA at any size). */
+  --color-paper: #f2ece1;
+  --color-ink: #231f1a;
+  --color-graphite: #5f574c;
+  --color-ash: #6f6557;
+  /* mist, hairline: decorative only — never used for text (2.22:1, 1.25:1) */
+  --color-mist: #a99f8f;
+  --color-hairline: #ddd4c4;
 
-  /* One restrained accent */
-  --color-accent: #cc2b1e;
+  /* One restrained accent: the forest green from adamhp.io (7.43:1 on paper) */
+  --color-accent: #2f5241;
 
   /* Typography — single typeface for the whole site */
-  --font-sans: "IBM Plex Mono", ui-monospace, monospace;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "Geist Mono", ui-monospace, monospace;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 
   /* Layout */
   --spacing-tile-gap: 12px;
   --breakpoint-md: 720px;
   --breakpoint-lg: 1100px;
+}
+
+/* Dark mode follows the system setting. Same tokens, night paper from
+   adamhp.io. Contrast on paper: ink 13.62:1, graphite 9.64:1, ash 6.65:1,
+   accent 9.01:1. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #1c1a16;
+    --color-ink: #eae3d6;
+    --color-graphite: #c9c0b0;
+    --color-ash: #a99f8f;
+    --color-mist: #5a5348;
+    --color-hairline: #36322b;
+    --color-accent: #9cc4aa;
+  }
 }
 
 /* Width budget to subtract from 100vw when computing the lightbox photo's
@@ -50,7 +65,7 @@ html,
 body {
   background: var(--color-paper);
   color: var(--color-ink);
-  color-scheme: light;
+  color-scheme: light dark;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
